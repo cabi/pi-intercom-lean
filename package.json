@@ -36,5 +36,13 @@
     "typebox": "1.4.2",
     "tsx": "^4.20.0",
     "js-tiktoken": "^1.0.20"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cabi/pi-intercom-lean.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cabi/pi-intercom-lean/issues"
+  },
+  "homepage": "https://github.com/cabi/pi-intercom-lean#readme"
 }
