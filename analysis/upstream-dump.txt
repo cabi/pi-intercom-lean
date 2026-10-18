@@ -1,0 +1,354 @@
+{
+  "plain": [
+    {
+      "name": "intercom",
+      "label": "Intercom",
+      "descriptionChars": 1687,
+      "promptSnippetChars": 119,
+      "promptGuidelinesChars": 0,
+      "parametersChars": 2261,
+      "total": 4067
+    }
+  ],
+  "subagent": [
+    {
+      "name": "contact_supervisor",
+      "label": "Contact Supervisor",
+      "descriptionChars": 522,
+      "promptSnippetChars": 156,
+      "promptGuidelinesChars": 548,
+      "parametersChars": 1031,
+      "total": 2257
+    },
+    {
+      "name": "intercom",
+      "label": "Intercom",
+      "descriptionChars": 1687,
+      "promptSnippetChars": 119,
+      "promptGuidelinesChars": 0,
+      "parametersChars": 2261,
+      "total": 4067
+    }
+  ]
+}
+
+===== plain / intercom =====
+--- description ---
+Send a message to another pi session running on this machine.
+Use this to communicate findings, request help, or coordinate work with other sessions.
+
+Target a session by name, full session ID, or the short id shown in parentheses
+by "list" (a leading prefix of the ID is enough). Prefer the short id when two
+sessions share a name. Re-list before reusing a session ID; skip if it resolves to self.
+
+Usage:
+  intercom({ action: "list" })                    → List active sessions
+  intercom({ action: "list-cwd" })                → List sessions in the current working directory
+  intercom({ action: "list-cwd", cwd: "/path" })  → List sessions in a specific directory
+  intercom({ action: "send", to: "name-or-id", message: "..." })  → Send message
+  intercom({ action: "send", cwd: "/path", openProjectPaneIfMissing: true, message: "..." }) → Open a visible Herdr project pane when needed, then send
+  intercom({ action: "ask", to: "name-or-id", message: "..." })   → Ask and wait for reply
+  intercom({ action: "handover", to: "name-or-id", message: "next task" }) → Summarize this session and hand it over; the receiver acts on it
+  intercom({ action: "handover", cwd: "/path", openProjectPaneIfMissing: true }) → Hand over to the session in that project, opening a Herdr pane when needed
+  intercom({ action: "cancel", messageId: "..." })                 → Request cancellation of a sent message
+  intercom({ action: "reply", message: "..." })                      → Reply to the active/single pending ask
+  intercom({ action: "pending" })                                      → List unresolved inbound asks
+  intercom({ action: "status" })                  → Show connection status
+--- promptSnippet ---
+Use to coordinate with other local pi sessions: list peers, send updates, ask for help, or check intercom connectivity.
+--- promptGuidelines ---
+undefined
+--- parameters ---
+{
+  "type": "object",
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "list",
+        "list-cwd",
+        "send",
+        "ask",
+        "handover",
+        "reply",
+        "pending",
+        "status",
+        "cancel"
+      ],
+      "description": "Action: 'list', 'list-cwd', 'send', 'ask', 'handover', 'reply', 'pending', 'status', or 'cancel'. 'handover' summarizes this session with the current model and sends it to the target, which acts on it; 'message' is the optional next task."
+    },
+    "to": {
+      "type": "string",
+      "description": "Target session: name, full session ID, or the short id shown in parentheses by 'list' (a leading ID prefix resolves). For send/ask/handover with cwd, omit to target the sole live session in that cwd or the newly opened project-pane session. For 'reply', disambiguates the pending ask."
+    },
+    "message": {
+      "type": "string",
+      "description": "Message to send (for 'send', 'ask', or 'reply' action). For 'handover', the optional next task for the receiver."
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "name",
+          "content"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "file",
+              "snippet",
+              "context"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "replyTo": {
+      "type": "string",
+      "description": "Message ID to reply to (for threading or responding to an 'ask')"
+    },
+    "messageId": {
+      "type": "string",
+      "description": "Message ID for actions that operate on an existing message, such as 'cancel'."
+    },
+    "supersedes": {
+      "type": "string",
+      "description": "Previous message ID this send/ask explicitly supersedes. Only works for the same sender and receiver."
+    },
+    "retryOf": {
+      "type": "string",
+      "description": "Previous message ID this send/ask is a user-authored retry of. Retries always send a new message ID."
+    },
+    "cwd": {
+      "type": "string",
+      "description": "Working directory filter for 'list-cwd'. For send/ask/handover, scopes target lookup to that directory; omit 'to' to target the sole live peer there. Absolute, or relative to the current session's cwd; '.' means the current cwd."
+    },
+    "openProjectPaneIfMissing": {
+      "type": "boolean",
+      "description": "For send/ask/handover with cwd, open a visible Herdr project pane and launch Pi there when no matching live session is connected."
+    },
+    "focus": {
+      "type": "boolean",
+      "description": "For openProjectPaneIfMissing, focus the new Herdr pane. Defaults to true."
+    }
+  }
+}
+
+===== subagent / contact_supervisor =====
+--- description ---
+Subagent-only tool for contacting the supervisor agent that delegated this task. Use need_decision when blocked, uncertain, needing approval, or facing a product/API/scope decision before continuing; this waits for the supervisor's reply. Use interview_request when multiple structured questions need supervisor answers; this also waits for a reply. Use progress_update only for meaningful progress or unexpected discoveries that change the plan; this does not wait for a reply. Do not use for routine completion handoffs.
+--- promptSnippet ---
+Subagent-only: contact the supervisor for decisions, structured interviews, or meaningful plan-changing updates. Do not use for routine completion handoffs.
+--- promptGuidelines ---
+[
+  "Use contact_supervisor with reason='need_decision' when a subagent is blocked, uncertain, needs approval, or faces a product/API/scope decision before continuing.",
+  "Use contact_supervisor with reason='interview_request' when the child needs multiple structured answers from the supervisor in one blocking exchange.",
+  "Use contact_supervisor with reason='progress_update' only for meaningful progress or unexpected discoveries that change the plan.",
+  "Do not use contact_supervisor for routine completion handoffs; return the final subagent result normally."
+]
+--- parameters ---
+{
+  "type": "object",
+  "required": [
+    "reason"
+  ],
+  "properties": {
+    "reason": {
+      "type": "string",
+      "enum": [
+        "need_decision",
+        "progress_update",
+        "interview_request"
+      ],
+      "description": "Contact reason: 'need_decision' waits for a reply; 'interview_request' sends structured questions and waits for a reply; 'progress_update' sends a non-blocking update"
+    },
+    "message": {
+      "type": "string",
+      "description": "Decision request, optional interview note, or meaningful progress update for the supervisor"
+    },
+    "interview": {
+      "type": "object",
+      "required": [
+        "questions"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "question"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "multi",
+                  "text",
+                  "image",
+                  "info"
+                ],
+                "description": "Question type: single, multi, text, image, or info"
+              },
+              "question": {
+                "type": "string"
+              },
+              "options": {
+                "type": "array",
+                "items": {}
+              },
+              "context": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "Structured interview request for reason='interview_request'"
+    }
+  }
+}
+
+===== subagent / intercom =====
+--- description ---
+Send a message to another pi session running on this machine.
+Use this to communicate findings, request help, or coordinate work with other sessions.
+
+Target a session by name, full session ID, or the short id shown in parentheses
+by "list" (a leading prefix of the ID is enough). Prefer the short id when two
+sessions share a name. Re-list before reusing a session ID; skip if it resolves to self.
+
+Usage:
+  intercom({ action: "list" })                    → List active sessions
+  intercom({ action: "list-cwd" })                → List sessions in the current working directory
+  intercom({ action: "list-cwd", cwd: "/path" })  → List sessions in a specific directory
+  intercom({ action: "send", to: "name-or-id", message: "..." })  → Send message
+  intercom({ action: "send", cwd: "/path", openProjectPaneIfMissing: true, message: "..." }) → Open a visible Herdr project pane when needed, then send
+  intercom({ action: "ask", to: "name-or-id", message: "..." })   → Ask and wait for reply
+  intercom({ action: "handover", to: "name-or-id", message: "next task" }) → Summarize this session and hand it over; the receiver acts on it
+  intercom({ action: "handover", cwd: "/path", openProjectPaneIfMissing: true }) → Hand over to the session in that project, opening a Herdr pane when needed
+  intercom({ action: "cancel", messageId: "..." })                 → Request cancellation of a sent message
+  intercom({ action: "reply", message: "..." })                      → Reply to the active/single pending ask
+  intercom({ action: "pending" })                                      → List unresolved inbound asks
+  intercom({ action: "status" })                  → Show connection status
+--- promptSnippet ---
+Use to coordinate with other local pi sessions: list peers, send updates, ask for help, or check intercom connectivity.
+--- promptGuidelines ---
+undefined
+--- parameters ---
+{
+  "type": "object",
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "list",
+        "list-cwd",
+        "send",
+        "ask",
+        "handover",
+        "reply",
+        "pending",
+        "status",
+        "cancel"
+      ],
+      "description": "Action: 'list', 'list-cwd', 'send', 'ask', 'handover', 'reply', 'pending', 'status', or 'cancel'. 'handover' summarizes this session with the current model and sends it to the target, which acts on it; 'message' is the optional next task."
+    },
+    "to": {
+      "type": "string",
+      "description": "Target session: name, full session ID, or the short id shown in parentheses by 'list' (a leading ID prefix resolves). For send/ask/handover with cwd, omit to target the sole live session in that cwd or the newly opened project-pane session. For 'reply', disambiguates the pending ask."
+    },
+    "message": {
+      "type": "string",
+      "description": "Message to send (for 'send', 'ask', or 'reply' action). For 'handover', the optional next task for the receiver."
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "name",
+          "content"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "file",
+              "snippet",
+              "context"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "replyTo": {
+      "type": "string",
+      "description": "Message ID to reply to (for threading or responding to an 'ask')"
+    },
+    "messageId": {
+      "type": "string",
+      "description": "Message ID for actions that operate on an existing message, such as 'cancel'."
+    },
+    "supersedes": {
+      "type": "string",
+      "description": "Previous message ID this send/ask explicitly supersedes. Only works for the same sender and receiver."
+    },
+    "retryOf": {
+      "type": "string",
+      "description": "Previous message ID this send/ask is a user-authored retry of. Retries always send a new message ID."
+    },
+    "cwd": {
+      "type": "string",
+      "description": "Working directory filter for 'list-cwd'. For send/ask/handover, scopes target lookup to that directory; omit 'to' to target the sole live peer there. Absolute, or relative to the current session's cwd; '.' means the current cwd."
+    },
+    "openProjectPaneIfMissing": {
+      "type": "boolean",
+      "description": "For send/ask/handover with cwd, open a visible Herdr project pane and launch Pi there when no matching live session is connected."
+    },
+    "focus": {
+      "type": "boolean",
+      "description": "For openProjectPaneIfMissing, focus the new Herdr pane. Defaults to true."
+    }
+  }
+}
