@@ -48,6 +48,36 @@ pi install https://github.com/cabi/pi-intercom-lean    # https
 or in a project, add it to your pi extension list / `package.json` and load it like any other extension.
 Replace `pi-intercom` with this package — pi throws on duplicate tool names, so a session must not load both at once.
 
+## Example guidance text for subagents
+
+If a subagent misuses intercom (polling, asking busy peers, routine completion via supervisor), paste this into its AGENTS.md / task prompt:
+
+```markdown
+## Intercom usage
+
+Talk to the supervisor and peer pi sessions with the `intercom` tool; `op` picks the
+action. `op: help` prints the full upstream schema.
+
+- **Supervisor** (the session that delegated this task): `op: supervisor` with
+  `reason: need_decision` or `interview_request` **waits for the reply** — use when
+  blocked, uncertain, or facing a scope/product decision. `reason: progress_update`
+  is non-blocking, for plan-changing discoveries only; routine completion belongs in
+  your final result, not here.
+- **Peers:** `op: send` is fire-and-forget; `op: ask` blocks until the reply arrives;
+  `op: reply` answers the active or single pending inbound ask (`to` disambiguates).
+- **Delivery rule:** messages only reach an idle session — a busy peer drops sends and
+  auto-answers asks without ever seeing them. Never poll for a result; keep working and
+  report once. `op: pending` lists unanswered inbound asks.
+- **Targeting:** name, full session ID, or the short id in parentheses from
+  `op: list` (leading ID prefix is enough; with no exact match, a leading name prefix
+  works when exactly one connected session shares it). Prefer the short id when names
+  clash; re-list before reusing an id; never target self.
+- **Scoping:** for send/ask/handover, `cwd` restricts targeting to that directory;
+  omit `to` to hit the sole live session there; `openProjectPaneIfMissing` spawns one.
+- Rare fields (`attachments`, `interview`) go as JSON strings. `op: handover` sends a
+  model-generated session summary the receiver acts on (`message` = next task).
+```
+
 ## Development
 
 ```sh
@@ -57,3 +87,18 @@ npm run measure # regenerate the token table above
 ```
 
 See [MAINTENANCE.md](MAINTENANCE.md) for the upstream-version contract and upgrade steps.
+
+## Update prompt
+
+Paste this into a pi session to run the next upstream sync:
+
+```text
+Sync pi-intercom-lean to the latest version of upstream pi-intercom.
+
+1. Read MAINTENANCE.md first to understand the current upstream version and adaptation points.
+2. Check the latest upstream version. Compare the code and changelog between the two versions, and list: added or removed tools, changes to parameters and defaults, behavior changes, and whether the internals recorded in MAINTENANCE.md still hold.
+3. If only the version number changed and the code didn't, just upgrade the dependency.
+4. For new parameters or tools, add them to the lean version using the same trimming rules: common ones go in the schema, rare ones go in help. If upstream changed behavior, update the descriptions so they still match what the tool does.
+5. Run the tests, re-measure the tokens, and update the README and MAINTENANCE.md.
+6. Summarize the changes for me, and only publish after I confirm.
+```
