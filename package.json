@@ -1,6 +1,6 @@
 {
   "name": "pi-intercom-lean",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Token-lean wrapper around pi-intercom: identical features, one merged tool with compact descriptions and schemas.",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
     "measure": "tsx analysis/measure-tokens.ts"
   },
   "dependencies": {
-    "pi-intercom": "0.17.1"
+    "pi-intercom": "0.18.0"
   },
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
@@ -33,9 +33,9 @@
     "@earendil-works/pi-ai": "1.3.0",
     "@earendil-works/pi-coding-agent": "1.3.0",
     "@earendil-works/pi-tui": "1.3.0",
-    "typebox": "1.4.2",
+    "js-tiktoken": "^1.0.20",
     "tsx": "^4.20.0",
-    "js-tiktoken": "^1.0.20"
+    "typebox": "1.4.2"
   },
   "repository": {
     "type": "git",

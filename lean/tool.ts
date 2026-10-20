@@ -82,7 +82,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 function leanDescription(hasSupervisor: boolean): string {
   const paragraphs = [
     "Communicate with other pi sessions running on this machine.",
-    'Address a session by name, full session ID, or the short id shown in parentheses by list (a leading prefix of the ID is enough); prefer the short id when two sessions share a name, re-list before reusing an ID, and skip a target that resolves to self.',
+    'Address a session by name, full session ID, or the short id shown in parentheses by list (a leading ID prefix is enough; with no exact name or ID match, a leading name prefix shared by exactly one connected session also resolves, otherwise use the full name); prefer the short id when two sessions share a name, re-list before reusing an ID, and skip a target that resolves to self.',
     'list and list-cwd show sessions; cwd filters by directory ("." is the current cwd). send delivers without waiting; ask waits for the reply. handover summarizes this session with the current model and sends it to the target, which acts on it; message is the optional next task. reply answers the active or single pending ask (to disambiguates). cancel requests cancellation of a sent message (messageId). pending lists unresolved inbound asks; status shows connection state.',
     "For send, ask, and handover, cwd scopes target lookup to that directory; omit to to target the sole live session there, and openProjectPaneIfMissing opens a visible Herdr project pane with a new Pi session when none is live there (focus focuses the pane).",
   ];

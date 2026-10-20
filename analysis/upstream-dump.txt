@@ -6,8 +6,8 @@
       "descriptionChars": 1687,
       "promptSnippetChars": 119,
       "promptGuidelinesChars": 0,
-      "parametersChars": 2261,
-      "total": 4067
+      "parametersChars": 2410,
+      "total": 4216
     }
   ],
   "subagent": [
@@ -26,8 +26,8 @@
       "descriptionChars": 1687,
       "promptSnippetChars": 119,
       "promptGuidelinesChars": 0,
-      "parametersChars": 2261,
-      "total": 4067
+      "parametersChars": 2410,
+      "total": 4216
     }
   ]
 }
@@ -82,7 +82,7 @@ undefined
     },
     "to": {
       "type": "string",
-      "description": "Target session: name, full session ID, or the short id shown in parentheses by 'list' (a leading ID prefix resolves). For send/ask/handover with cwd, omit to target the sole live session in that cwd or the newly opened project-pane session. For 'reply', disambiguates the pending ask."
+      "description": "Target session: name, full session ID, or the short id shown in parentheses by 'list' (a leading ID prefix resolves; when no session has this exact name or ID, a leading name prefix shared by exactly one connected session also resolves, otherwise use the full name). For send/ask/handover with cwd, omit to target the sole live session in that cwd or the newly opened project-pane session. For 'reply', disambiguates the pending ask."
     },
     "message": {
       "type": "string",
@@ -286,7 +286,7 @@ undefined
     },
     "to": {
       "type": "string",
-      "description": "Target session: name, full session ID, or the short id shown in parentheses by 'list' (a leading ID prefix resolves). For send/ask/handover with cwd, omit to target the sole live session in that cwd or the newly opened project-pane session. For 'reply', disambiguates the pending ask."
+      "description": "Target session: name, full session ID, or the short id shown in parentheses by 'list' (a leading ID prefix resolves; when no session has this exact name or ID, a leading name prefix shared by exactly one connected session also resolves, otherwise use the full name). For send/ask/handover with cwd, omit to target the sole live session in that cwd or the newly opened project-pane session. For 'reply', disambiguates the pending ask."
     },
     "message": {
       "type": "string",

@@ -6,26 +6,26 @@ A token-lean wrapper around [pi-intercom](https://github.com/nicobailon/pi-inter
 
 ## Token savings (o200k_base / gpt-4o)
 
-Measured with `npm run measure` against pi-intercom 0.17.1. "Declaration" = description + parameters JSON, sent with every request that lists tools; snippet + guidelines land in the system prompt.
+Measured with `npm run measure` against pi-intercom 0.18.0. "Declaration" = description + parameters JSON, sent with every request that lists tools; snippet + guidelines land in the system prompt.
 
 ### Main session
 
 | Tool | Description | Parameters | Snippet+guidelines | Total |
 |---|---|---|---|---|
-| upstream `intercom` | 413 tok (1,687 ch) | 534 tok (2,261 ch) | 25 tok | 972 tok |
-| lean `intercom` | 234 tok (1,135 ch) | 196 tok (788 ch) | 18 tok | 448 tok |
+| upstream `intercom` | 413 tok (1,687 ch) | 563 tok (2,410 ch) | 25 tok | 1,001 tok |
+| lean `intercom` | 259 tok (1,266 ch) | 196 tok (788 ch) | 18 tok | 473 tok |
 
-**54% saved (524 tokens per request).**
+**53% saved (528 tokens per request).**
 
 ### Subagent session
 
 | Tool | Description | Parameters | Snippet+guidelines | Total |
 |---|---|---|---|---|
-| upstream `intercom` | 413 tok | 534 tok | 25 tok | 972 tok |
+| upstream `intercom` | 413 tok | 563 tok | 25 tok | 1,001 tok |
 | upstream `contact_supervisor` | 95 tok | 231 tok | 130 tok | 456 tok |
-| lean `intercom` (includes supervisor ops) | 278 tok (1,384 ch) | 262 tok (1,051 ch) | 27 tok | 567 tok |
+| lean `intercom` (includes supervisor ops) | 303 tok (1,515 ch) | 262 tok (1,051 ch) | 27 tok | 592 tok |
 
-**60% saved (861 tokens per request).**
+**59% saved (865 tokens per request).**
 
 ## How it works
 

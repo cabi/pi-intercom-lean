@@ -7,7 +7,7 @@
  *   list never reaches the model directly and cannot change mid-session (the
  *   proxy keeps swallowing registerTool even for calls upstream makes later
  *   from event handlers);
- * - setActiveTools is blocked (upstream does not call it as of 0.17.1; this is
+ * - setActiveTools is blocked (upstream does not call it as of 0.18.0; this is
  *   defensive, to guarantee a fixed tool list);
  * - everything else (commands, key bindings, overlays, events, appendEntry,
  *   session hooks) passes through untouched, so every non-tool feature behaves
