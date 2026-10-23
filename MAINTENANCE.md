@@ -4,7 +4,7 @@ This is a thin adapter around upstream. It contains no upstream logic of its own
 
 ## Matching upstream version
 
-- **Pinned:** `pi-intercom@0.18.0` (exact version in `package.json` — no `^`, no `~`).
+- **Pinned:** `pi-intercom@0.18.1` (exact version in `package.json` — no `^`, no `~`).
 - Verify with `npm ls pi-intercom`.
 
 ## What was trimmed per tool
@@ -19,7 +19,7 @@ Upstream registers two tools. Both are merged into one lean `intercom` tool with
 ### `contact_supervisor` → op `supervisor` (subagent sessions only, merged into the same tool)
 
 - **Description** (522 ch + 705 ch snippet+guidelines → one short paragraph): kept which reasons wait for a reply and which don't, and when to use it (decisions, structured questions, plan changes — not routine completion). Dropped: the long interview-protocol guidelines (still fully available via `op: help` and upstream's runtime errors).
-- **Parameters** (1,031 → shared schema + JSON strings): `reason` enum kept verbatim; `message` kept; `interview`'s 11-field nested schema collapsed into a JSON-string shape note (the structure is fully documented in `op: help` and validated by upstream on execute). Unchanged in 0.18.0.
+- **Parameters** (1,031 → shared schema + JSON strings): `reason` enum kept verbatim; `message` kept; `interview`'s 11-field nested schema collapsed into a JSON-string shape note (the structure is fully documented in `op: help` and validated by upstream on execute). Unchanged through 0.18.1.
 
 ### `help` (new, lean-only)
 
@@ -31,7 +31,7 @@ Returns the upstream `description`, `promptSnippet`, `promptGuidelines`, and `pa
 |---|---|---|
 | Tool names `"intercom"` and `"contact_supervisor"` | routing, help topics, renderers | lean op routes nowhere / renders nothing |
 | `registerTool` registration at extension load (synchronous) | the Proxy collects tools during `upstream(pi)` | empty tool list at lean registration time |
-| Upstream never calls `setActiveTools` and registers no loader tools (as of 0.18.0) | lean blocks `setActiveTools` to keep the tool list static | if upstream starts using it, features would silently vanish; revisit then |
+| Upstream never calls `setActiveTools` and registers no loader tools (as of 0.18.1) | lean blocks `setActiveTools` to keep the tool list static | if upstream starts using it, features would silently vanish; revisit then |
 | `execute(toolCallId, params, signal, onUpdate, ctx)` signature and `params.action` dispatch | forwarding with `{...params, action: op}` | calls fail or misroute |
 | `contact_supervisor` params `reason` / `message` / `interview` | forwarding | supervisor ops break |
 | Result shape `{ content, details?: { error } }` and renderer args (`args.action`, `args.reason`, `interview.title`) | render shims | degraded rendering only |

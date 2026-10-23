@@ -6,7 +6,7 @@ A token-lean wrapper around [pi-intercom](https://github.com/nicobailon/pi-inter
 
 ## Token savings (o200k_base / gpt-4o)
 
-Measured with `npm run measure` against pi-intercom 0.18.0. "Declaration" = description + parameters JSON, sent with every request that lists tools; snippet + guidelines land in the system prompt.
+Measured with `npm run measure` against pi-intercom 0.18.1. "Declaration" = description + parameters JSON, sent with every request that lists tools; snippet + guidelines land in the system prompt.
 
 ### Main session
 
